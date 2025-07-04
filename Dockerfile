@@ -1,14 +1,28 @@
-# Start from an official OpenJDK base image
-FROM eclipse-temurin:17-jdk-alpine
+# Stage 1: Build the jar using Maven
+FROM maven:3.9.3-eclipse-temurin-17 AS build
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy the project’s built jar (you’ll build it in step 3)
-COPY target/NewLife-0.0.1-SNAPSHOT.jar app.jar
+# Copy only pom.xml and download dependencies first (for caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Expose the port Spring Boot uses
+# Copy the rest of the source code
+COPY src ./src
+
+# Build the project and package the jar (skip tests for faster build)
+RUN mvn clean package -DskipTests
+
+# Stage 2: Create a lightweight runtime image
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Copy the jar from the build stage
+COPY --from=build /app/target/NewLife-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the default Spring Boot port
 EXPOSE 8080
 
-# Run the jar file
+# Run the jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
