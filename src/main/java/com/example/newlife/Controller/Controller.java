@@ -125,7 +125,11 @@ public class Controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    @GetMapping("/page")
+    public ResponseEntity<List<PageContent>> getByPage(@RequestParam String name) {
+        List<PageContent> results = repository.findByPage(name);
+        return ResponseEntity.ok(results);
+    }
 
     // ✅ DELETE
     @DeleteMapping("/{id}")
