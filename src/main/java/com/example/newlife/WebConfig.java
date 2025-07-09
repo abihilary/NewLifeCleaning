@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // Allow all endpoints
                 .allowedOrigins(
                         "http://localhost:3000",            // Local dev frontend
-                        "https://your-frontend-app.com"     // Replace with your deployed frontend domain
+                        "https://laundry-7fa04.web.app"     // Replace with your deployed frontend domain
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
